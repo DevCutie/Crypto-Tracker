@@ -11,12 +11,9 @@ const Home = () => {
   const [sortBy, setSortBy] = useState("market_cap_rank");
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const interval = setInterval(fetchCryptoData,300)
-
-    return () => clearInterval(interval)
-  
-  }, []);
+useEffect(() => {
+  fetchCryptoData();
+}, []);
 
   useEffect(() => {
     filterAndSort();

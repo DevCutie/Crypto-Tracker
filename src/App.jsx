@@ -4,7 +4,7 @@ import CoinDetail from './pages/CoinDetail';
 import Home from './pages/Home';
 const App = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/Crypto-Tracker">
     <Routes>
       <Route path='/'  element={<Home/>}/>
       <Route path='/coin/:id'  element={<CoinDetail />}/>
