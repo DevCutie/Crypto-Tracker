@@ -8,7 +8,7 @@ export const CryptoCard = ({ crypto }) => {
      <div className="crypto-card">
       <div className="crypto-header">
         <div className="crypto-info">
-          <img src={crypto.image} alt="crypto.name" />
+          <img src={crypto.image} alt={crypto.name} />
           <div>
             <h3>{crypto.name}</h3>
             <p className="symbol">{crypto.symbol.toUpperCase()}</p>

@@ -1,5 +1,5 @@
 {
-  "name": "make-magic",
+  "name": "crypto-tracker",
   "homepage": "https://DevDee-star.github.io/Crypto-Tracker/",
   "private": true,
   "version": "0.0.0",
@@ -10,9 +10,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy" : "gh-pages -d dist"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@better-auth/infra": "^0.2.5",
     "gh-pages": "^6.3.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
