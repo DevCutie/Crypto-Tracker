@@ -41,3 +41,7 @@ Price Chart: An interactive Line Chart showing the price movement over the last 
 Dynamic Routing: Click any card on the Home page to navigate to that specific coin's data.
 
 🛠️ Tech Stack Frontend: React (Hooks: useState, useEffect, useParams)
+
+
+Acknowledgements
+Earlier commits in this repository use a misconfigured git identity (johndoe@example.com) — those commits are my own work.
