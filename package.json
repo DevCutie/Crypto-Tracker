@@ -13,7 +13,6 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@better-auth/infra": "^0.2.5",
     "gh-pages": "^6.3.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
