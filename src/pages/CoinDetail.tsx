@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; // Removed React import
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchCoinData, fetchChartData } from "../api/coinGecko";
-import { formatPrice,formatMarketCap } from "../utils/formatter";
+import { formatPrice, formatMarketCap } from "../utils/formatter";
 import {
   CartesianGrid,
   LineChart,
@@ -11,41 +11,49 @@ import {
   Line,
   Tooltip,
 } from "recharts";
-import { DetailedCoin, ChartData } from "../types/coin";
+import { DetailedCoin } from "../types/coin";
+import { formatPriceChange } from "../utils/priceChange";
 
 const CoinDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const[coin,setCoin]= useState<DetailedCoin | null>(null)
-  const [chartData, setChartData] = useState<{time: string, price: number}[]>([]);
+  const [coin, setCoin] = useState<DetailedCoin | null>(null);
+  const [chartData, setChartData] = useState<{ time: string; price: number }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-
   useEffect(() => {
-    loadData();
+    if (!id) return;
+    const controller = new AbortController();
+    loadData(id, controller.signal);
+    return () => controller.abort();
   }, [id]);
 
-  const loadData = async () => {
+  const loadData = async (coinId: string, signal: AbortSignal) => {
     try {
+      setIsLoading(true);
       const [coinRes, chartRes] = await Promise.all([
-        
-        fetchCoinData(id! ),
-        fetchChartData(id!)
+        fetchCoinData(coinId, signal),
+        fetchChartData(coinId, signal),
       ]);
 
       setCoin(coinRes);
 
-      const formattedData = chartRes.prices.map((price) => ({
-        time: new Date(price[0]).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        }),
-        price: price[1],
-      }));
-
-      setChartData(formattedData);
-    } catch (error) {
-      console.error(error);
+      if (chartRes && chartRes.prices) {
+        const formatted = chartRes.prices.map((price: [number, number]) => ({
+          time: new Date(price[0]).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          }),
+          price: price[1],
+        }));
+        setChartData(formatted);
+      }
+    } catch (error: any) {
+      if (error.name === "AbortError") {
+        console.log("Fetch aborted");
+      } else {
+        console.error("Fetch error:", error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -62,6 +70,7 @@ const CoinDetail = () => {
     );
   }
 
+
   if (!coin) {
     return (
       <div className="app">
@@ -75,22 +84,19 @@ const CoinDetail = () => {
     );
   }
 
-  const priceChange = coin.market_data.price_change_percentage_24h || 0;
-  const isPositive = priceChange >= 0;
 
+  const { isPositive, arrow, abs } = formatPriceChange(
+    coin.market_data.price_change_percentage_24h
+  );
 
-  if (!coin) {
-  return <div className="loading">Loading Coin Details...</div>;
-}
   return (
     <div className="app">
       <header className="header">
         <div className="header-content">
           <div className="logo-section">
-            <h1>🚀 coin Tracker</h1>
+            <h1>🚀 Coin Tracker</h1>
             <p>Real-time cryptocurrency prices and market data</p>
           </div>
-
           <button onClick={() => navigate("/")} className="back-button">
             ← Back to List
           </button>
@@ -112,12 +118,8 @@ const CoinDetail = () => {
         <div className="coin-price-section">
           <div className="current-price">
             <h2>{formatPrice(coin.market_data.current_price.usd)}</h2>
-
-            <span
-              className={`change-badge ${isPositive ? "positive" : "negative"}`}
-            >
-              {isPositive ? "↑ " : "↓ "}
-              {Math.abs(priceChange).toFixed(2)}%
+            <span className={`change-badge ${isPositive ? "positive" : "negative"}`}>
+              {arrow} {abs}%
             </span>
           </div>
 
@@ -128,7 +130,6 @@ const CoinDetail = () => {
                 {formatPrice(coin.market_data.high_24h.usd)}
               </span>
             </div>
-
             <div className="price-range">
               <span className="range-label">24h Low</span>
               <span className="range-value">
@@ -143,18 +144,8 @@ const CoinDetail = () => {
           <ResponsiveContainer width="100%" height={400}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="time"
-                stroke="#9ca3af"
-                style={{ fontSize: "12px" }}
-                domain={["auto", "auto"]}
-              />
-              <YAxis
-                stroke="#9ca3af"
-                style={{ fontSize: "12px" }}
-                domain={["auto", "auto"]}
-              />
-
+              <XAxis dataKey="time" stroke="#9ca3af" style={{ fontSize: "12px" }} />
+              <YAxis stroke="#9ca3af" style={{ fontSize: "12px" }} domain={["auto", "auto"]} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "rgba(20, 20, 40, 0.95)",
@@ -163,14 +154,7 @@ const CoinDetail = () => {
                   color: "#e0e0e0",
                 }}
               />
-              <Line
-                type="monotone"
-                dataKey="price"
-                stroke="#ADD8E6"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4, fill: "#ccc", stroke: "none", opacity: 0.5 }}
-              />
+              <Line type="monotone" dataKey="price" stroke="#ADD8E6" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -178,36 +162,23 @@ const CoinDetail = () => {
         <div className="stats-grid">
           <div className="stat-card">
             <span className="stat-label">Market Cap</span>
-            <span className="stat-value">
-              {" "}
-              ${formatMarketCap(coin.market_data.market_cap.usd)}
-            </span>
+            <span className="stat-value">${formatMarketCap(coin.market_data.market_cap.usd)}</span>
           </div>
-
           <div className="stat-card">
-            <span className="stat-label"> Volume (24)</span>
-            <span className="stat-value">
-              {" "}
-              ${formatMarketCap(coin.market_data.total_volume.usd)}
-            </span>
+            <span className="stat-label">Volume (24h)</span>
+            <span className="stat-value">${formatMarketCap(coin.market_data.total_volume.usd)}</span>
           </div>
-
           <div className="stat-card">
             <span className="stat-label">Circulating Supply</span>
-            <span className="stat-value">
-              {coin.market_data.circulating_supply?.toLocaleString() || "N/A"}
-            </span>
+            <span className="stat-value">{coin.market_data.circulating_supply?.toLocaleString() || "N/A"}</span>
           </div>
-
           <div className="stat-card">
             <span className="stat-label">Total Supply</span>
-            <span className="stat-value">
-              {coin.market_data.total_supply?.toLocaleString() || "N/A"}
-            </span>
+            <span className="stat-value">{coin.market_data.total_supply?.toLocaleString() || "N/A"}</span>
           </div>
         </div>
       </div>
-       <footer className="footer">
+      <footer className="footer">
         <p>Data provided by CoinGecko API • Updated every 30 seconds</p>
       </footer>
     </div>
@@ -215,5 +186,3 @@ const CoinDetail = () => {
 };
 
 export default CoinDetail;
-
-
