@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { fetchCryptos } from "../api/coinGecko";
 import { CryptoCard } from "../components/CryptoCard";
+import { Coin,DetailedCoin } from "../types/coin";
 
 
 const Home = () => {
-  const [cryptoList, setCryptoList] = useState([]);
-  const [filteredList, setFilteredList] = useState([]);
+  const [cryptoList, setCryptoList] = useState<Coin[]>([]);
+  const [filteredList, setFilteredList] = useState<Coin[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("market_cap_rank");

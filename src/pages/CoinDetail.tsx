@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchCoinData, fetchChartData } from "../api/coinGecko";
-import { formatMarketCap, formatPrice } from "../utils/formatter";
+import { formatPrice,formatMarketCap } from "../utils/formatter";
 import {
   CartesianGrid,
   LineChart,
@@ -11,13 +11,15 @@ import {
   Line,
   Tooltip,
 } from "recharts";
+import { DetailedCoin, ChartData } from "../types/coin";
 
 const CoinDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [coin, setCoin] = useState(null);
-  const [chartData, setChartData] = useState([]);
+  const[coin,setCoin]= useState<DetailedCoin | null>(null)
+  const [chartData, setChartData] = useState<{time: string, price: number}[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
 
   useEffect(() => {
     loadData();
@@ -26,8 +28,9 @@ const CoinDetail = () => {
   const loadData = async () => {
     try {
       const [coinRes, chartRes] = await Promise.all([
-        fetchCoinData(id),
-        fetchChartData(id),
+        
+        fetchCoinData(id! ),
+        fetchChartData(id!)
       ]);
 
       setCoin(coinRes);
@@ -75,6 +78,10 @@ const CoinDetail = () => {
   const priceChange = coin.market_data.price_change_percentage_24h || 0;
   const isPositive = priceChange >= 0;
 
+
+  if (!coin) {
+  return <div className="loading">Loading Coin Details...</div>;
+}
   return (
     <div className="app">
       <header className="header">

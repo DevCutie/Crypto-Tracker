@@ -8,40 +8,84 @@
 
 
 
+🚀 CryptoTracker Pro (TypeScript Edition)
+A high-performance, real-time cryptocurrency tracking dashboard built with React 18 and fully migrated to TypeScript for enterprise-grade type safety.
 
 
+<hr>
+
+🛠 Tech Stack Evolution
+Frontend: React.js (Migrated from .jsx to .tsx)
+
+Language: TypeScript (Strict Mode)
+
+Routing: React Router v6
+
+Data Fetching: Axios / Fetch API with CoinGecko
+
+Charts: Recharts
+
+Styling: Modular CSS
+
+<hr/>
+
+⚡ Key Features (Post-Migration)
+1. Full TypeScript Integration
+The entire codebase has been refactored for Type Safety. This eliminates the most common runtime errors and provides a superior developer experience through VS Code IntelliSense.
+
+Custom Interfaces: Dedicated models for Coin, DetailedCoin, and ChartData.
+
+Strict Props: All components (like CryptoCard) now use interface-defined props to ensure data integrity.
+
+2. Smart Formatting Utilities
+We moved all data manipulation into a standalone, type-safe utility module (formatter.ts).
+
+Intl-based Currency: Formats raw numbers into USD currency strings automatically.
+
+Abbreviated Market Caps: Logic to convert billions/millions into readable B and M suffixes.
+
+3. Advanced Filtering & Sorting
+A refined logic system on the Home page allows users to parse hundreds of coins instantly:
+
+Search: Real-time filtering by name or symbol.
+
+Multi-Criteria Sort: Sort by Rank, Price, 24h Change, or Market Cap.
+
+4. High-Fidelity Charting
+Interactive price tracking using Recharts:
+
+Data is automatically mapped from the CoinGecko 7-day sparkline into a format recognized by the SVG line engine.
+
+Includes custom tooltips and responsive scaling for mobile devices.
 
 
+<hr>
+
+🏗 Project ArchitectureFileRoleLanguagetypes/coin.tsThe "Contract" (Interfaces).tsapi/coinGecko.tsAPI calls & Data Fetching.tsutils/formatter.tsMathematical formatting tools.tscomponents/CryptoCard.tsxUI for individual coin cards.tsxpages/Home.tsxMain dashboard & filtering logic.tsxpages/CoinDetail.tsxDeep-dive view with chart logic.tsx
+
+<hr>
 
 
-🚀 Crypto Tracker A real-time cryptocurrency tracking application built with React, Vite, and the CoinGecko API. This project provides live market data, interactive price visualization, and a seamless user experience for monitoring digital assets.
+🚦 Getting Started
+Clone the repo:
 
-✨ Features Real-time Data: Fetches live price, market cap, and volume data directly from CoinGecko.
-
-Dynamic Search & Filtering: Instantly filter through the top 100 cryptocurrencies by name or symbol.
-
-Advanced Sorting: Sort assets by Rank, Price, 24h Change, or Market Cap.
-
-Dual View Modes: Toggle between a Grid View (card-based) and List View for high-density data viewing.
-
-Interactive Charts: 7-day price history visualization using Recharts.
-
-Responsive Design: Optimized for a smooth experience across desktop and mobile devices.
-
-🗺️ Navigation & Flow The app is structured into two primary views using react-router-dom:
-
-Home Dashboard (/) Search Bar: Filter the list in real-time as you type.
-Controls: Adjust the sorting order and switch between Grid/List layouts.
-
-Crypto Cards: Displays a snapshot of each coin, including a 24h price change indicator (green for profit, red for loss).
-
-Coin Detail Page (/coin/:id) Market Stats: Detailed view of High/Low 24h prices, Circulating Supply, and Total Supply.
-Price Chart: An interactive Line Chart showing the price movement over the last 7 days.
-
-Dynamic Routing: Click any card on the Home page to navigate to that specific coin's data.
-
-🛠️ Tech Stack Frontend: React (Hooks: useState, useEffect, useParams)
+Bash
+git clone [https://github.com/DevCutie/Crypto-Tracker.git]
 
 
-Acknowledgements
-Earlier commits in this repository use a misconfigured git identity (johndoe@example.com) — those commits are my own work.
+Install dependencies:
+
+Bash
+npm install
+
+Run in development mode:
+
+Bash
+npm run dev
+
+
+Type Check:
+
+Bash
+npx tsc --noEmit
+

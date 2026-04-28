@@ -1,10 +1,12 @@
+import { Coin, ChartData,DetailedCoin } from "../types/coin";
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 if (!BASE_URL) {
   throw new Error("VITE_API_BASE_URL is not defined! Check your .env file.");
 }
 
- export const fetchCryptos = async () => {
+ export const fetchCryptos = async (): Promise<Coin[]> => {
 const response = await fetch( `${BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
 
  if (!response.ok) {
@@ -12,28 +14,34 @@ const response = await fetch( `${BASE_URL}/coins/markets?vs_currency=usd&order=m
   
  }
 
- return response.json()
+const data = await response.json()
+return data as (Coin[])
  }
 
 
 
-export const fetchCoinData = async (id) => {
+export const fetchCoinData = async (id : string): Promise<DetailedCoin> => {
   const response = await fetch(
     `${BASE_URL}/coins/${id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`
   );
   if (!response.ok) {
     throw new Error("Failed to fetch coin data");
   }
-  return response.json();
+
+  const data = await response.json();
+
+  return data as DetailedCoin
 };
 
-export const fetchChartData = async (id) => {
+export const fetchChartData = async (id: string): Promise<ChartData> => {
   const response = await fetch(
     `${BASE_URL}/coins/${id}/market_chart?vs_currency=usd&days=7`
   );
   if (!response.ok) {
     throw new Error("Failed to fetch chart data");
   }
-  return response.json();
+const data = await response.json();
+return  data as ChartData
+
 };
 
